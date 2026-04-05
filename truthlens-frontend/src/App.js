@@ -20,11 +20,11 @@ function App() {
 
     setLoading(true);
 
-    let url = "http://localhost:8080/api/news/external";
+    let url = "https://truthlens-ai-news-2.onrender.com/api/news/external";
 
-    if (category === "war") url = "http://localhost:8080/api/news/war";
-    else if (category === "sports") url = "http://localhost:8080/api/news/sports";
-    else if (category === "politics") url = "http://localhost:8080/api/news/politics";
+    if (category === "war") url = "https://truthlens-ai-news-2.onrender.com/api/news/war";
+    else if (category === "sports") url = "https://truthlens-ai-news-2.onrender.com/api/news/sports";
+    else if (category === "politics") url = "https://truthlens-ai-news-2.onrender.com/api/news/politics";
 
     fetch(url)
       .then(res => res.json())
