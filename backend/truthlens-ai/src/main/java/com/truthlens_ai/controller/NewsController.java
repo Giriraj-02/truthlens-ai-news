@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/news")
-@CrossOrigin("*")
+@CrossOrigin(origins = "https://truthlens-ai-news.vercel.app")
 public class NewsController {
 
     @Autowired
@@ -24,31 +24,31 @@ public class NewsController {
     @Autowired
     private ExternalNewsService externalNewsService;
 
-    // ✅ HOME (Latest India News)
+    // ✅ HOME
     @GetMapping("/external")
     public List<Map<String, Object>> getExternalNews() {
         return processNews(externalNewsService.fetchNews());
     }
 
-    // ✅ WAR NEWS
+    // ✅ WAR
     @GetMapping("/war")
     public List<Map<String, Object>> getWarNews() {
         return processNews(externalNewsService.fetchByKeyword("war"));
     }
 
-    // ✅ CRICKET NEWS
+    // ✅ SPORTS
     @GetMapping("/sports")
     public List<Map<String, Object>> getCricketNews() {
         return processNews(externalNewsService.fetchByKeyword("cricket"));
     }
 
-    // ✅ POLITICS NEWS
+    // ✅ POLITICS
     @GetMapping("/politics")
     public List<Map<String, Object>> getPoliticsNews() {
         return processNews(externalNewsService.fetchByKeyword("politics"));
     }
 
-    // 🔥 COMMON AI PROCESSING METHOD
+    // 🔥 COMMON METHOD
     private List<Map<String, Object>> processNews(List<Map<String, Object>> articles) {
 
         List<Map<String, Object>> finalList = new ArrayList<>();
@@ -59,14 +59,15 @@ public class NewsController {
                     ? article.get("description").toString()
                     : "";
 
-             String summary = aiService.getSummary(content);
+            String summary = aiService.getSummary(content);
 
-           // 🔥 CLEAN unwanted text
-                  if (summary != null) {
-                   summary = summary.replace("summary:", "")
-                     .replace("summarize:", "")
-                     .trim();
-}            double score = aiService.getFakeScore(content);
+            if (summary != null) {
+                summary = summary.replace("summary:", "")
+                        .replace("summarize:", "")
+                        .trim();
+            }
+
+            double score = aiService.getFakeScore(content);
 
             Map<String, Object> newArticle = new HashMap<>();
             newArticle.put("title", article.get("title"));
@@ -75,9 +76,8 @@ public class NewsController {
             newArticle.put("score", score);
             newArticle.put("fake", score < 0.5);
             newArticle.put("date", article.get("publishedAt"));
-
-               newArticle.put("url", article.get("url"));
-               newArticle.put("image", article.get("urlToImage"));
+            newArticle.put("url", article.get("url"));
+            newArticle.put("image", article.get("urlToImage"));
 
             finalList.add(newArticle);
         }
@@ -85,13 +85,13 @@ public class NewsController {
         return finalList;
     }
 
-    // ✅ Stored news (DB)
+    // ✅ DB News
     @GetMapping("/latest")
     public List<News> getLatestNews() {
         return newsService.getLatestNews();
     }
 
-    // 🔥 Manual add + AI
+    // ✅ ADD NEWS
     @PostMapping("/add")
     public News addNews(@RequestBody News news) {
 
