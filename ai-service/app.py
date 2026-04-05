@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import pipeline
+import os
 
 app = FastAPI()
-# Fake news model (lightweight)
-fake_news_model = pipeline("text-classification", model="distilbert-base-uncased")
 
-# Summarization via text-generation (FLAN-T5)
+# 🔥 Load models (startup pe ek baar load honge)
+fake_news_model = pipeline("text-classification", model="distilbert-base-uncased")
 summarizer = pipeline("text-generation", model="google/flan-t5-small")
 
 class NewsInput(BaseModel):
@@ -14,7 +14,7 @@ class NewsInput(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "AI Service Running"}
+    return {"message": "AI Service Running 🚀"}
 
 @app.post("/detect")
 def detect_fake(news: NewsInput):
