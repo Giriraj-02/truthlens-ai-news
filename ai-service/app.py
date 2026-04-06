@@ -1,13 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from transformers import pipeline
-import os
 
 app = FastAPI()
-
-# 🔥 Load models (startup pe ek baar load honge)
-fake_news_model = pipeline("text-classification", model="distilbert-base-uncased")
-summarizer = pipeline("text-generation", model="google/flan-t5-small")
 
 class NewsInput(BaseModel):
     content: str
@@ -16,18 +10,24 @@ class NewsInput(BaseModel):
 def home():
     return {"message": "AI Service Running 🚀"}
 
+# ✅ Fake detection (simple logic)
 @app.post("/detect")
 def detect_fake(news: NewsInput):
-    result = fake_news_model(news.content)
-    return {
-        "label": result[0]['label'],
-        "score": result[0]['score']
-    }
+    text = news.content.lower()
 
+    if "fake" in text or "rumor" in text or "scam" in text:
+        return {"label": "FAKE", "score": 0.3}
+    else:
+        return {"label": "REAL", "score": 0.8}
+
+# ✅ Summary (simple extract)
 @app.post("/summarize")
 def summarize(news: NewsInput):
-    prompt = f"summarize: {news.content}"
-    result = summarizer(prompt, max_length=60)
-    return {
-        "summary": result[0]['generated_text']
-    }
+    content = news.content
+
+    if not content:
+        return {"summary": "No summary available"}
+
+    summary = content[:150] + "..."
+
+    return {"summary": summary}
