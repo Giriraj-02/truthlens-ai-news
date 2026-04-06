@@ -6,15 +6,13 @@ function App() {
   const [category, setCategory] = useState("home");
   const [search, setSearch] = useState("");
   const [darkMode, setDarkMode] = useState(false);
-  const [savedNews, setSavedNews] = useState([]); // ⭐ NEW
+  const [savedNews, setSavedNews] = useState([]);
 
-  // 🔥 Load saved news from localStorage
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("savedNews")) || [];
     setSavedNews(stored);
   }, []);
 
-  // 🔥 Fetch news
   useEffect(() => {
     if (category === "saved") return;
 
@@ -36,10 +34,8 @@ function App() {
 
   }, [category]);
 
-  // 🔥 Save / Unsave
   const toggleSave = (item) => {
     let updated;
-
     const exists = savedNews.find(n => n.title === item.title);
 
     if (exists) {
@@ -52,7 +48,6 @@ function App() {
     localStorage.setItem("savedNews", JSON.stringify(updated));
   };
 
-  // 🔥 Heading
   const getHeading = () => {
     if (category === "home") return "📰 Latest News";
     if (category === "war") return "⚔️ War News";
@@ -62,7 +57,6 @@ function App() {
     return "📰 News";
   };
 
-  // 🔥 Time Ago
   const timeAgo = (date) => {
     const now = new Date();
     const past = new Date(date);
@@ -74,10 +68,8 @@ function App() {
     return `${Math.floor(diff / 86400)} days ago`;
   };
 
-  // 🔍 Data source
   const displayNews = category === "saved" ? savedNews : news;
 
-  // 🔍 Filter
   const filteredNews = displayNews.filter(item =>
     item.title.toLowerCase().includes(search.toLowerCase()) ||
     item.summary.toLowerCase().includes(search.toLowerCase())
@@ -86,11 +78,12 @@ function App() {
   return (
     <div style={{
       display: "flex",
-      background: darkMode ? "#121212" : "#fff",
+      flexDirection: "row",
+      background: darkMode ? "#121212" : "#f5f6fa",
       color: darkMode ? "white" : "black"
     }}>
 
-      {/* 🔥 Sidebar */}
+      {/* Sidebar */}
       <div style={{
         ...styles.sidebar,
         background: darkMode ? "#1f1f1f" : "#1e1e2f"
@@ -108,7 +101,7 @@ function App() {
         </button>
       </div>
 
-      {/* 🔥 Main */}
+      {/* Main */}
       <div style={styles.main}>
 
         <h1>{getHeading()}</h1>
@@ -135,43 +128,35 @@ function App() {
                 <h3>{item.title}</h3>
 
                 <p style={styles.meta}>
-                  🏢 {item.source} <br />
-                  📅 {item.date ? timeAgo(item.date) : "No date"}
+                  🏢 {item.source} • 📅 {item.date ? timeAgo(item.date) : "No date"}
                 </p>
 
-                <p><b>AI-Summary:</b> {item.summary}</p>
+                {/* FULL AI SUMMARY */}
+                <p style={styles.summary}>
+                  <b>AI Summary:</b> {item.summary}
+                </p>
 
-                <p>Credibility: {(item.score * 100).toFixed(1)}%</p>
+                {/* ACTION BUTTONS */}
+                <div style={styles.actions}>
+                  <button onClick={() => toggleSave(item)} style={styles.saveBtn}>
+                    {isSaved ? "⭐ Saved" : "☆ Save"}
+                  </button>
 
-                <div style={styles.progressBar}>
-                  <div style={{
-                    ...styles.progressFill,
-                    width: `${item.score * 100}%`,
-                    background: item.score > 0.6 ? "#2ecc71" : "#f39c12"
-                  }}></div>
+                  {item.url && (
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" style={styles.readBtn}>
+                      Read →
+                    </a>
+                  )}
                 </div>
 
+                {/* REAL / FAKE AT BOTTOM */}
                 <p style={{
-                  color: item.fake ? "red" : "green",
+                  marginTop: "10px",
+                  color: item.fake ? "#e74c3c" : "#2ecc71",
                   fontWeight: "bold"
                 }}>
                   {item.fake ? "Fake ❌" : "Real ✅"}
                 </p>
-
-                {/* ⭐ SAVE BUTTON */}
-                <button
-                  onClick={() => toggleSave(item)}
-                  style={styles.saveBtn}
-                >
-                  {isSaved ? "⭐ Saved" : "☆ Save"}
-                </button>
-
-                {/* 🔗 READ MORE */}
-                {item.url && (
-                  <a href={item.url} target="_blank" rel="noopener noreferrer" style={styles.button}>
-                    Read Full Article →
-                  </a>
-                )}
 
               </div>
             );
@@ -190,6 +175,7 @@ function MenuItem({ text, onClick, active }) {
       style={{
         padding: "10px",
         cursor: "pointer",
+        borderRadius: "6px",
         background: active ? "#444" : "transparent"
       }}
     >
@@ -198,7 +184,6 @@ function MenuItem({ text, onClick, active }) {
   );
 }
 
-// 🎨 Styles
 const styles = {
   sidebar: {
     width: "220px",
@@ -214,60 +199,72 @@ const styles = {
 
   search: {
     marginBottom: "20px",
-    padding: "10px",
-    width: "60%",
-    borderRadius: "8px"
+    padding: "12px",
+    width: "100%",
+    maxWidth: "500px",
+    borderRadius: "10px",
+    border: "1px solid #ccc"
   },
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
     gap: "20px"
   },
 
   card: {
     background: "white",
     padding: "15px",
-    borderRadius: "10px"
+    borderRadius: "15px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between"
   },
 
   image: {
     width: "100%",
     height: "180px",
     objectFit: "cover",
-    borderRadius: "10px"
+    borderRadius: "10px",
+    marginBottom: "10px"
   },
 
   meta: {
     fontSize: "12px",
-    color: "#888"
+    color: "#777",
+    marginBottom: "10px"
   },
 
-  progressBar: {
-    background: "#eee",
-    height: "8px",
-    borderRadius: "10px"
+  summary: {
+    fontSize: "14px",
+    lineHeight: "1.5",
+    marginBottom: "10px"
   },
 
-  progressFill: {
-    height: "100%"
-  },
-
-  button: {
-    display: "block",
-    marginTop: "10px",
-    color: "blue"
+  actions: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
   },
 
   saveBtn: {
-    marginTop: "10px",
-    padding: "6px",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    border: "none",
     cursor: "pointer"
+  },
+
+  readBtn: {
+    textDecoration: "none",
+    color: "#3498db",
+    fontWeight: "bold"
   },
 
   toggle: {
     marginTop: "20px",
-    padding: "8px"
+    padding: "8px",
+    cursor: "pointer"
   }
 };
 
