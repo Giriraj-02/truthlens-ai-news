@@ -10,7 +10,7 @@ class NewsInput(BaseModel):
 def home():
     return {"message": "AI Service Running 🚀"}
 
-# ✅ Fake detection (simple logic)
+# ✅ Fake detection
 @app.post("/detect")
 def detect_fake(news: NewsInput):
     text = news.content.lower()
@@ -20,7 +20,7 @@ def detect_fake(news: NewsInput):
     else:
         return {"label": "REAL", "score": 0.8}
 
-# ✅ Summary (simple extract)
+# ✅ FULL SUMMARY (NO TRUNCATION)
 @app.post("/summarize")
 def summarize(news: NewsInput):
     content = news.content
@@ -28,6 +28,4 @@ def summarize(news: NewsInput):
     if not content:
         return {"summary": "No summary available"}
 
-    summary = content[:150] + "..."
-
-    return {"summary": summary}
+    return {"summary": content}  # FULL TEXT
