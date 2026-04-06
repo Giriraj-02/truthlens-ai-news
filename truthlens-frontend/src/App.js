@@ -5,7 +5,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("home");
   const [search, setSearch] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
   const [savedNews, setSavedNews] = useState([]);
 
   useEffect(() => {
@@ -48,26 +47,6 @@ function App() {
     localStorage.setItem("savedNews", JSON.stringify(updated));
   };
 
-  const getHeading = () => {
-    if (category === "home") return "📰 Latest News";
-    if (category === "war") return "⚔️ War News";
-    if (category === "sports") return "🏏 Sports News";
-    if (category === "politics") return "🌍 Global & India News";
-    if (category === "saved") return "⭐ Saved News";
-    return "📰 News";
-  };
-
-  const timeAgo = (date) => {
-    const now = new Date();
-    const past = new Date(date);
-    const diff = (now - past) / 1000;
-
-    if (diff < 60) return `${Math.floor(diff)} sec ago`;
-    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
-    return `${Math.floor(diff / 86400)} days ago`;
-  };
-
   const displayNews = category === "saved" ? savedNews : news;
 
   const filteredNews = displayNews.filter(item =>
@@ -76,35 +55,23 @@ function App() {
   );
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "row",
-      background: darkMode ? "#121212" : "#f5f6fa",
-      color: darkMode ? "white" : "black"
-    }}>
+    <div style={styles.container}>
 
-      {/* Sidebar */}
-      <div style={{
-        ...styles.sidebar,
-        background: darkMode ? "#1f1f1f" : "#1e1e2f"
-      }}>
-        <h2>📰 TruthLens</h2>
+      {/* 🔥 TOP NAVBAR (STICKY) */}
+      <div style={styles.navbar}>
+        <h2 style={{margin:0}}>📰 TruthLens</h2>
 
-        <MenuItem text="Home" active={category==="home"} onClick={() => setCategory("home")} />
-        <MenuItem text="War" active={category==="war"} onClick={() => setCategory("war")} />
-        <MenuItem text="Sports" active={category==="sports"} onClick={() => setCategory("sports")} />
-        <MenuItem text="Global & India News" active={category==="politics"} onClick={() => setCategory("politics")} />
-        <MenuItem text="Saved News" active={category==="saved"} onClick={() => setCategory("saved")} />
-
-        <button onClick={() => setDarkMode(!darkMode)} style={styles.toggle}>
-          {darkMode ? "☀ Light" : "🌙 Dark"} 
-        </button>
+        <div style={styles.menu}>
+          <NavItem text="Home" active={category==="home"} onClick={() => setCategory("home")} />
+          <NavItem text="War" active={category==="war"} onClick={() => setCategory("war")} />
+          <NavItem text="Sports" active={category==="sports"} onClick={() => setCategory("sports")} />
+          <NavItem text="Global" active={category==="politics"} onClick={() => setCategory("politics")} />
+          <NavItem text="Saved" active={category==="saved"} onClick={() => setCategory("saved")} />
+        </div>
       </div>
 
-      {/* Main */}
+      {/* MAIN */}
       <div style={styles.main}>
-
-        <h1>{getHeading()}</h1>
 
         <input
           type="text"
@@ -128,15 +95,14 @@ function App() {
                 <h3>{item.title}</h3>
 
                 <p style={styles.meta}>
-                  🏢 {item.source} • 📅 {item.date ? timeAgo(item.date) : "No date"}
+                  🏢 {item.source} • 📅 {item.date}
                 </p>
 
-                {/* FULL AI SUMMARY */}
+                {/* ✅ FULL SUMMARY */}
                 <p style={styles.summary}>
                   <b>AI Summary:</b> {item.summary}
                 </p>
 
-                {/* ACTION BUTTONS */}
                 <div style={styles.actions}>
                   <button onClick={() => toggleSave(item)} style={styles.saveBtn}>
                     {isSaved ? "⭐ Saved" : "☆ Save"}
@@ -149,7 +115,6 @@ function App() {
                   )}
                 </div>
 
-                {/* REAL / FAKE AT BOTTOM */}
                 <p style={{
                   marginTop: "10px",
                   color: item.fake ? "#e74c3c" : "#2ecc71",
@@ -162,38 +127,59 @@ function App() {
             );
           })}
         </div>
-
       </div>
+
+      {/* 🔥 FOOTER */}
+    <footer style={styles.footer}>
+  <p>© 2026 TruthLens</p>
+  <p>Built by Giriraj Singh Chouhan</p>
+  <p>AI News Intelligence Platform</p>
+</footer>
     </div>
   );
 }
 
-function MenuItem({ text, onClick, active }) {
+function NavItem({ text, onClick, active }) {
   return (
-    <p
+    <span
       onClick={onClick}
       style={{
-        padding: "10px",
+        margin: "0 10px",
         cursor: "pointer",
-        borderRadius: "6px",
-        background: active ? "#444" : "transparent"
+        fontWeight: active ? "bold" : "normal",
+        borderBottom: active ? "2px solid #3498db" : "none"
       }}
     >
       {text}
-    </p>
+    </span>
   );
 }
 
 const styles = {
-  sidebar: {
-    width: "220px",
-    color: "white",
-    minHeight: "100vh",
-    padding: "20px"
+  container: {
+    fontFamily: "Arial, sans-serif",
+    background: "#f5f6fa"
+  },
+
+  navbar: {
+    position: "sticky",
+    top: 0,
+    background: "white",
+    padding: "15px 20px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+    zIndex: 1000,
+    flexWrap: "wrap"
+  },
+
+  menu: {
+    display: "flex",
+    flexWrap: "wrap"
   },
 
   main: {
-    flex: 1,
     padding: "20px"
   },
 
@@ -216,10 +202,7 @@ const styles = {
     background: "white",
     padding: "15px",
     borderRadius: "15px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between"
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
   },
 
   image: {
@@ -232,26 +215,25 @@ const styles = {
 
   meta: {
     fontSize: "12px",
-    color: "#777",
-    marginBottom: "10px"
+    color: "#777"
   },
 
   summary: {
     fontSize: "14px",
-    lineHeight: "1.5",
-    marginBottom: "10px"
+    lineHeight: "1.6",
+    marginTop: "10px"
   },
 
   actions: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center"
+    marginTop: "10px"
   },
 
   saveBtn: {
     padding: "6px 10px",
-    borderRadius: "6px",
     border: "none",
+    borderRadius: "6px",
     cursor: "pointer"
   },
 
@@ -261,10 +243,12 @@ const styles = {
     fontWeight: "bold"
   },
 
-  toggle: {
-    marginTop: "20px",
-    padding: "8px",
-    cursor: "pointer"
+  footer: {
+    marginTop: "30px",
+    padding: "15px",
+    textAlign: "center",
+    background: "#1e1e2f",
+    color: "white"
   }
 };
 
