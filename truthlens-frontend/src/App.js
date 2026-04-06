@@ -139,19 +139,28 @@ function App() {
   );
 }
 
-function NavItem({ text, onClick, active }) {
+function NavItem({ text, icon, onClick, active }) {
   return (
-    <span
+    <div
       onClick={onClick}
       style={{
-        margin: "0 10px",
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        padding: "8px 14px",
+        marginRight: "8px",
+        borderRadius: "20px",
         cursor: "pointer",
-        fontWeight: active ? "bold" : "normal",
-        borderBottom: active ? "2px solid #3498db" : "none"
+        background: active ? "#3498db" : "#f1f2f6",
+        color: active ? "white" : "#333",
+        fontSize: "14px",
+        whiteSpace: "nowrap",
+        transition: "0.2s"
       }}
     >
-      {text}
-    </span>
+      <span>{icon}</span>
+      <span>{text}</span>
+    </div>
   );
 }
 
@@ -174,10 +183,12 @@ const styles = {
     flexWrap: "wrap"
   },
 
-  menu: {
-    display: "flex",
-    flexWrap: "wrap"
-  },
+menu: {
+  display: "flex",
+  overflowX: "auto",
+  whiteSpace: "nowrap",
+  marginTop: "10px"
+},
 
   main: {
     padding: "20px"
