@@ -10,7 +10,7 @@ public class AiService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private final String AI_URL = "http://127.0.0.1:8000";
+    private final String AI_URL = "https://truthlens-ai-news-3.onrender.com";
 
     // 🔥 Summarization
     public String getSummary(String content) {
